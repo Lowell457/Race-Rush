@@ -1,150 +1,102 @@
 using Fusion;
-using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-public enum Direction { left = -1, right = 1}
-
-public class TestMovement : NetworkBehaviour
+public class PlayerMovement : NetworkBehaviour
 {
     [Header("Move")]
-    public float moveSpeed = 8f;
-    private Direction direction = Direction.right;
+    public float moveSpeed = 8f;                 // unidades/seg (¡sin DeltaTime!)
 
     [Header("Jump")]
     public float jumpForce = 16f;
-    public float coyoteTime = 0.1f;       // grace after leaving ground
-    public float jumpBufferTime = 0.1f;   // grace before landing
-    [Range(0f, 1f)] public float jumpCutMultiplier = 0.5f; // variable height
+    public float coyoteTime = 0.1f;
+    public float jumpBufferTime = 0.1f;
+    [Range(0f, 1f)] public float jumpCutMultiplier = 0.5f;
 
     [Header("Ground Check")]
-    public Transform groundCheck;         // empty child at the feet
+    public Transform groundCheck;
     public Vector2 groundCheckSize = new Vector2(0.5f, 0.1f);
     public LayerMask groundLayer;
 
-    Rigidbody2D rb;
-    float moveInput;
-    bool isGrounded;
-    float coyoteCounter;
-    float jumpBufferCounter;
-    bool jumpHeld;
-
     [Header("Dash")]
-    private bool isDashing = false;
-    [SerializeField] private float dashDuration;
-    private float dashProgress;
-    [SerializeField] private float dashSpeed;
-    private bool canDash;
-    [SerializeField] private float dashCooldown;
-    private float dashCooldownTimer;
-    [SerializeField] private float minimumDashSpeed;
+    public float dashSpeed = 22f;                // unidades/seg, constante
+    public float dashDuration = 0.15f;           // distancia = 22 * 0.15 ≈ 3.3 u
+    public float dashCooldown = 0.6f;
+
+    [Networked] NetworkButtons PrevButtons { get; set; }
+    [Networked] TickTimer DashTimer { get; set; }
+    [Networked] TickTimer DashCooldownTimer { get; set; }
+    [Networked] TickTimer CoyoteTimer { get; set; }
+    [Networked] TickTimer JumpBufferTimer { get; set; }
+    [Networked] NetworkBool AirDashUsed { get; set; }
+    [Networked] NetworkBool JumpCutDone { get; set; }
+    [Networked] public int Facing { get; set; }
+
+    public bool IsDashing => DashTimer.IsRunning && !DashTimer.Expired(Runner);
+    public bool DashReady => DashCooldownTimer.ExpiredOrNotRunning(Runner) && !AirDashUsed;
+
+    Rigidbody2D rb;
 
     public override void Spawned()
     {
         rb = GetComponent<Rigidbody2D>();
-        dashProgress = dashDuration;
-    }
-
-    // Hooked up from a PlayerInput component (Behavior: Send Messages / Invoke Unity Events)
-    public void OnMove(InputAction.CallbackContext ctx)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        moveInput = ctx.ReadValue<float>();
-
-        if (!isDashing)
-        {
-            if (moveInput < 0)
-                direction = Direction.left;
-            else if (moveInput > 0)
-                direction = Direction.right;
-        }
-    }
-
-    public void OnJump(InputAction.CallbackContext ctx)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        if (ctx.started) jumpBufferCounter = jumpBufferTime; // press buffered
-        jumpHeld = ctx.ReadValueAsButton();
-        if (ctx.canceled) jumpHeld = false;
-    }
-
-    public void OnDash(InputAction.CallbackContext ctx)
-    {
-        if (!HasStateAuthority)
-            return;
-
-        if (ctx.started && canDash && !isDashing)
-        {
-            dashProgress = 0f;
-            dashCooldownTimer = dashCooldown;
-        }
-    }
-
-    private void AirStuff()
-    {
-        if (!HasStateAuthority)
-            return;
-
-        // Ground check with an OverlapBox at the feet
-        isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
-
-        if (dashCooldownTimer <= 0 && isGrounded)
-        {
-            canDash = true;
-        }
-        else dashCooldownTimer -= Runner.DeltaTime;
-
-        // Coyote time and jump buffer countdowns
-        coyoteCounter = isGrounded ? coyoteTime : coyoteCounter - Runner.DeltaTime;
-        jumpBufferCounter -= Runner.DeltaTime;
-
-        // Execute a jump if we have buffered input and are within coyote window
-        if (jumpBufferCounter > 0f && coyoteCounter > 0f)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
-            jumpBufferCounter = 0f;
-            coyoteCounter = 0f;
-            canDash = true;
-        }
-
-        // Variable jump height: cut upward velocity when the button is released early
-        if (!jumpHeld && rb.linearVelocity.y > 0f)
-        {
-            rb.linearVelocity = new Vector2(rb.linearVelocity.x,
-                                            rb.linearVelocity.y * jumpCutMultiplier);
-        }
+        if (HasStateAuthority) Facing = 1;
     }
 
     public override void FixedUpdateNetwork()
     {
-        base.FixedUpdateNetwork();
-        CalculateMovement();
-        AirStuff();
-    }
+        if (Runner.IsForward && Runner.Tick % 60 == 0)
+            Debug.Log($"[{name}] HasInputAuth={Object.HasInputAuthority} StateAuth={HasStateAuthority} GetInput={GetInput(out PlayerInputData d)} Move={d.Move}");
 
-    private void CalculateMovement()
-    {
-        if (!HasStateAuthority)
-            return;
+        if (!GetInput(out PlayerInputData input)) return;
 
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed * Runner.DeltaTime, rb.linearVelocity.y);
+        var pressed = input.Buttons.GetPressed(PrevButtons);
+        PrevButtons = input.Buttons;
 
-        if (dashProgress < dashDuration)
+        bool grounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
+        if (grounded)
         {
-            isDashing = true;
-            canDash = false;
-            dashProgress += Runner.DeltaTime;
-            float mod = dashDuration / dashProgress;
-            Vector2 dash = Vector2.right * dashSpeed * mod;
-            dash.x += minimumDashSpeed;
-            rb.linearVelocity = dash * (int)direction * Runner.DeltaTime;
+            CoyoteTimer = TickTimer.CreateFromSeconds(Runner, coyoteTime);
+            AirDashUsed = false;
         }
-        else
-            isDashing = false;
+
+        if (pressed.IsSet(InputButton.Jump))
+            JumpBufferTimer = TickTimer.CreateFromSeconds(Runner, jumpBufferTime);
+
+        // --- Inicio del dash ---
+        if (pressed.IsSet(InputButton.Dash) && DashReady && !IsDashing)
+        {
+            DashTimer = TickTimer.CreateFromSeconds(Runner, dashDuration);
+            DashCooldownTimer = TickTimer.CreateFromSeconds(Runner, dashCooldown);
+            if (!grounded) AirDashUsed = true;   // un dash aéreo por salto
+        }
+
+        // --- Durante el dash: velocidad constante, ignora todo lo demás ---
+        if (IsDashing)
+        {
+            rb.linearVelocity = new Vector2(Facing * dashSpeed, 0f);
+            return;
+        }
+
+        // --- Movimiento normal ---
+        if (input.Move != 0f) Facing = input.Move > 0f ? 1 : -1;
+        rb.linearVelocity = new Vector2(input.Move * moveSpeed, rb.linearVelocity.y);
+
+        // --- Salto con coyote + buffer ---
+        if (!JumpBufferTimer.ExpiredOrNotRunning(Runner) && !CoyoteTimer.ExpiredOrNotRunning(Runner))
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            JumpBufferTimer = TickTimer.None;
+            CoyoteTimer = TickTimer.None;
+            JumpCutDone = false;
+        }
+
+        // --- Altura variable: se corta UNA vez al soltar ---
+        bool jumpHeld = input.Buttons.IsSet(InputButton.Jump);
+        if (!jumpHeld && !JumpCutDone && rb.linearVelocity.y > 0f)
+        {
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpCutMultiplier);
+            JumpCutDone = true;
+        }
     }
 
     void OnDrawGizmosSelected()

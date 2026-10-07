@@ -1,9 +1,11 @@
+using Fusion;
+using Fusion.Addons.Physics;
+using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Fusion;
-using Fusion.Sockets;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -19,6 +21,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     [SerializeField] int lobbySceneIndex = 1;
     [SerializeField] int menuSceneIndex = 0;
     public const int MaxPlayers = 4;
+
+    bool jumpPressed, dashPressed;
 
     void Awake()
     {
@@ -36,6 +40,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         var runner = go.AddComponent<NetworkRunner>();
         runner.ProvideInput = true;
         go.AddComponent<NetworkSceneManagerDefault>();
+        go.AddComponent<RunnerSimulatePhysics2D>();
         runner.AddCallbacks(this);
         return runner;
     }
@@ -147,8 +152,33 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
     }
 
+    void Update()
+    {
+        // Acumulamos los "presses" entre ticks para no perder un toque rápido
+        var kb = Keyboard.current;
+        if (kb == null) return;
+        if (kb.wKey.wasPressedThisFrame || kb.spaceKey.wasPressedThisFrame) jumpPressed = true;
+        if (kb.leftShiftKey.wasPressedThisFrame) dashPressed = true;
+    }
+
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
+        var kb = Keyboard.current;
+        var data = new PlayerInputData();
+
+        if (kb != null)
+        {
+            float move = 0f;
+            if (kb.aKey.isPressed) move -= 1f;
+            if (kb.dKey.isPressed) move += 1f;
+            data.Move = move;
+
+            data.Buttons.Set(InputButton.Jump, jumpPressed || kb.wKey.isPressed || kb.spaceKey.isPressed);
+            data.Buttons.Set(InputButton.Dash, dashPressed || kb.leftShiftKey.isPressed);
+        }
+
+        input.Set(data);
+        jumpPressed = dashPressed = false;
     }
 
     public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input)
