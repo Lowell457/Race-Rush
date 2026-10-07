@@ -99,7 +99,8 @@ public class LobbyUI : MonoBehaviour
         txtBtnListo.text = local != null && local.IsReady ? "CANCELAR" : "LISTO";
 
         // Botón Iniciar: solo host, sala llena (y todos listos si se exige)
-        bool full = count == max;
+        //bool full = count > 1;
+        bool full = true;
         bool allReady = players.All(p => p.IsReady);
         bool canStart = full && (!requireAllReady || allReady);
 

@@ -1,10 +1,11 @@
+using Fusion;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public enum Direction { left = -1, right = 1}
 
-public class TestMovement : MonoBehaviour
+public class TestMovement : NetworkBehaviour
 {
     [Header("Move")]
     public float moveSpeed = 8f;
@@ -38,7 +39,7 @@ public class TestMovement : MonoBehaviour
     private float dashCooldownTimer;
     [SerializeField] private float minimumDashSpeed;
 
-    void Awake()
+    public override void Spawned()
     {
         rb = GetComponent<Rigidbody2D>();
         dashProgress = dashDuration;
@@ -47,6 +48,9 @@ public class TestMovement : MonoBehaviour
     // Hooked up from a PlayerInput component (Behavior: Send Messages / Invoke Unity Events)
     public void OnMove(InputAction.CallbackContext ctx)
     {
+        if (!HasStateAuthority)
+            return;
+
         moveInput = ctx.ReadValue<float>();
 
         if (!isDashing)
@@ -60,6 +64,9 @@ public class TestMovement : MonoBehaviour
 
     public void OnJump(InputAction.CallbackContext ctx)
     {
+        if (!HasStateAuthority)
+            return;
+
         if (ctx.started) jumpBufferCounter = jumpBufferTime; // press buffered
         jumpHeld = ctx.ReadValueAsButton();
         if (ctx.canceled) jumpHeld = false;
@@ -67,6 +74,9 @@ public class TestMovement : MonoBehaviour
 
     public void OnDash(InputAction.CallbackContext ctx)
     {
+        if (!HasStateAuthority)
+            return;
+
         if (ctx.started && canDash && !isDashing)
         {
             dashProgress = 0f;
@@ -74,13 +84,11 @@ public class TestMovement : MonoBehaviour
         }
     }
 
-    void Update()
-    {
-        AirStuff();
-    }
-
     private void AirStuff()
     {
+        if (!HasStateAuthority)
+            return;
+
         // Ground check with an OverlapBox at the feet
         isGrounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
 
@@ -88,11 +96,11 @@ public class TestMovement : MonoBehaviour
         {
             canDash = true;
         }
-        else dashCooldownTimer -= Time.deltaTime;
+        else dashCooldownTimer -= Runner.DeltaTime;
 
         // Coyote time and jump buffer countdowns
-        coyoteCounter = isGrounded ? coyoteTime : coyoteCounter - Time.deltaTime;
-        jumpBufferCounter -= Time.deltaTime;
+        coyoteCounter = isGrounded ? coyoteTime : coyoteCounter - Runner.DeltaTime;
+        jumpBufferCounter -= Runner.DeltaTime;
 
         // Execute a jump if we have buffered input and are within coyote window
         if (jumpBufferCounter > 0f && coyoteCounter > 0f)
@@ -111,24 +119,29 @@ public class TestMovement : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
+    public override void FixedUpdateNetwork()
     {
+        base.FixedUpdateNetwork();
         CalculateMovement();
+        AirStuff();
     }
 
     private void CalculateMovement()
     {
-        rb.linearVelocity = new Vector2(moveInput * moveSpeed * Time.fixedDeltaTime, rb.linearVelocity.y);
+        if (!HasStateAuthority)
+            return;
+
+        rb.linearVelocity = new Vector2(moveInput * moveSpeed * Runner.DeltaTime, rb.linearVelocity.y);
 
         if (dashProgress < dashDuration)
         {
             isDashing = true;
             canDash = false;
-            dashProgress += Time.fixedDeltaTime;
+            dashProgress += Runner.DeltaTime;
             float mod = dashDuration / dashProgress;
-            Vector2 dash = Vector2.right * dashSpeed * mod * Time.fixedDeltaTime;
-            dash.x += minimumDashSpeed * Time.fixedDeltaTime;
-            rb.linearVelocity = dash * (int)direction;
+            Vector2 dash = Vector2.right * dashSpeed * mod;
+            dash.x += minimumDashSpeed;
+            rb.linearVelocity = dash * (int)direction * Runner.DeltaTime;
         }
         else
             isDashing = false;
