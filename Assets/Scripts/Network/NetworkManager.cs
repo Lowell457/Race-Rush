@@ -24,6 +24,9 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     bool jumpPressed, dashPressed;
 
+    public Transform selfTransform {  get; private set; }
+    public Rigidbody2D selfRb { get; private set; }
+
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
@@ -203,5 +206,14 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadStart(NetworkRunner runner)
     {
+    }
+
+    public void SetPlayerTransform(Transform player)
+    {
+        selfTransform = player;
+    }
+    public void SetPlayerTransform(Rigidbody2D player)
+    {
+        selfRb = player;
     }
 }

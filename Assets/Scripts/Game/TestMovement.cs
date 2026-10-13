@@ -1,4 +1,5 @@
 using Fusion;
+using TMPro;
 using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour
@@ -36,17 +37,28 @@ public class PlayerMovement : NetworkBehaviour
 
     Rigidbody2D rb;
 
+    [SerializeField] private TextMeshPro playerNameDisplay;
+    [SerializeField] private Color selfPlayerColor;
+
     public override void Spawned()
     {
         rb = GetComponent<Rigidbody2D>();
+
+        if (HasInputAuthority)
+        {
+            RPC_SetDisplayName(NetworkManager.Instance.LocalNickname);
+            NetworkManager.Instance.SetPlayerTransform(transform);
+            NetworkManager.Instance.SetPlayerTransform(rb);
+        }
+
         if (HasStateAuthority) Facing = 1;
     }
 
     public override void FixedUpdateNetwork()
     {
-        if (Runner.IsForward && Runner.Tick % 60 == 0)
+        /*if (Runner.IsForward && Runner.Tick % 60 == 0)
             Debug.Log($"[{name}] HasInputAuth={Object.HasInputAuthority} StateAuth={HasStateAuthority} GetInput={GetInput(out PlayerInputData d)} Move={d.Move}");
-
+        */
         if (!GetInput(out PlayerInputData input)) return;
 
         var pressed = input.Buttons.GetPressed(PrevButtons);
@@ -97,6 +109,14 @@ public class PlayerMovement : NetworkBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpCutMultiplier);
             JumpCutDone = true;
         }
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_SetDisplayName(string name)
+    {
+        playerNameDisplay.text = name;
+
+        if (HasInputAuthority) playerNameDisplay.color = selfPlayerColor;
     }
 
     void OnDrawGizmosSelected()
