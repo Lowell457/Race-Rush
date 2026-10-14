@@ -1,5 +1,6 @@
 using Fusion;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 public class PlayerMovement : NetworkBehaviour
@@ -22,6 +23,11 @@ public class PlayerMovement : NetworkBehaviour
     public float dashSpeed = 22f;                // unidades/seg, constante
     public float dashDuration = 0.15f;           // distancia = 22 * 0.15 ≈ 3.3 u
     public float dashCooldown = 0.6f;
+    //Player push
+    [SerializeField] private float radius;
+    [SerializeField] private float pushForce;
+    [SerializeField] private LayerMask playerLayer;
+    [SerializeField] private float verticalPushbackMultiplier;
 
     [Networked] NetworkButtons PrevButtons { get; set; }
     [Networked] TickTimer DashTimer { get; set; }
@@ -80,6 +86,24 @@ public class PlayerMovement : NetworkBehaviour
             DashTimer = TickTimer.CreateFromSeconds(Runner, dashDuration);
             DashCooldownTimer = TickTimer.CreateFromSeconds(Runner, dashCooldown);
             if (!grounded) AirDashUsed = true;   // un dash aéreo por salto
+
+            //Push players back
+            var players = Physics2D.OverlapCircleAll(transform.position, radius, playerLayer);
+            
+
+            foreach (var p in players)
+            {
+                if (p != null && p != gameObject)
+                {
+                    Rigidbody2D pRb = p.GetComponent<Rigidbody2D>();
+
+                    if (pRb != null)
+                    {
+                        Vector2 pushbackAngle = ((Vector2.left * Facing) + (Vector2.up * verticalPushbackMultiplier)) * pushForce;
+                        pRb.AddForce(pushbackAngle, ForceMode2D.Impulse);
+                    }
+                }
+            }
         }
 
         // --- Durante el dash: velocidad constante, ignora todo lo demás ---
@@ -124,5 +148,6 @@ public class PlayerMovement : NetworkBehaviour
         if (groundCheck == null) return;
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
+        Gizmos.DrawWireSphere(transform.position, radius);
     }
 }
