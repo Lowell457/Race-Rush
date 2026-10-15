@@ -1,4 +1,5 @@
 using Fusion;
+using System;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -29,6 +30,8 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private float verticalPushbackMultiplier;
 
+    [SerializeField] private Tuple<Transform, int> savedCheckPoint;
+
     [Networked] NetworkButtons PrevButtons { get; set; }
     [Networked] TickTimer DashTimer { get; set; }
     [Networked] TickTimer DashCooldownTimer { get; set; }
@@ -36,15 +39,17 @@ public class PlayerMovement : NetworkBehaviour
     [Networked] TickTimer JumpBufferTimer { get; set; }
     [Networked] NetworkBool AirDashUsed { get; set; }
     [Networked] NetworkBool JumpCutDone { get; set; }
-    [Networked] public int Facing { get; set; }
+    [Networked, OnChangedRender(nameof(SetSpriteDirection))] public int Facing { get; set; }
 
     public bool IsDashing => DashTimer.IsRunning && !DashTimer.Expired(Runner);
     public bool DashReady => DashCooldownTimer.ExpiredOrNotRunning(Runner) && !AirDashUsed;
 
     Rigidbody2D rb;
 
+    [Header("Visual display")]
     [SerializeField] private TextMeshPro playerNameDisplay;
     [SerializeField] private Color selfPlayerColor;
+    [SerializeField] private SpriteRenderer playerSprite;
 
     public override void Spawned()
     {
@@ -135,12 +140,39 @@ public class PlayerMovement : NetworkBehaviour
         }
     }
 
+    public void KillPlayer()
+    {
+        if (!HasStateAuthority)
+            return;
+
+        rb.linearVelocity = Vector2.zero;
+
+        transform.position = savedCheckPoint.Item1.position;
+    }
+
     [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     private void RPC_SetDisplayName(string name)
     {
         playerNameDisplay.text = name;
 
         if (HasInputAuthority) playerNameDisplay.color = selfPlayerColor;
+    }
+
+    public void SaveCheckPoint(Transform checkpoint, int priority)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        if (savedCheckPoint == null)
+            savedCheckPoint = Tuple.Create(checkpoint, priority);
+        else if (savedCheckPoint.Item2 <= priority)
+            savedCheckPoint = Tuple.Create(checkpoint, priority);
+    }
+
+
+    private void SetSpriteDirection()
+    {
+        playerSprite.flipX = Facing != 1; 
     }
 
     void OnDrawGizmosSelected()
