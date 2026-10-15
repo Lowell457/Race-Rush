@@ -8,6 +8,9 @@ public class PlayerMovement : NetworkBehaviour
 {
     [Header("Move")]
     public float moveSpeed = 8f;                 // unidades/seg (¡sin DeltaTime!)
+    [SerializeField] private bool stunned = false;
+    private Timer stunTimer;
+    private float currentStunDuration;
 
     [Header("Jump")]
     public float jumpForce = 16f;
@@ -29,6 +32,7 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private float pushForce;
     [SerializeField] private LayerMask playerLayer;
     [SerializeField] private float verticalPushbackMultiplier;
+    [SerializeField] private float stunOtherFor;
 
     [SerializeField] private Tuple<Transform, int> savedCheckPoint;
 
@@ -72,6 +76,14 @@ public class PlayerMovement : NetworkBehaviour
         */
         if (!GetInput(out PlayerInputData input)) return;
 
+        if (stunned && stunTimer.ElapsedInSeconds >= currentStunDuration)
+        {
+            stunned = false;
+            stunTimer.Reset();
+            stunTimer.Stop();
+            currentStunDuration = 0;
+        }
+
         var pressed = input.Buttons.GetPressed(PrevButtons);
         PrevButtons = input.Buttons;
 
@@ -82,11 +94,11 @@ public class PlayerMovement : NetworkBehaviour
             AirDashUsed = false;
         }
 
-        if (pressed.IsSet(InputButton.Jump))
+        if (pressed.IsSet(InputButton.Jump) && !stunned)
             JumpBufferTimer = TickTimer.CreateFromSeconds(Runner, jumpBufferTime);
 
         // --- Inicio del dash ---
-        if (pressed.IsSet(InputButton.Dash) && DashReady && !IsDashing)
+        if (pressed.IsSet(InputButton.Dash) && DashReady && !IsDashing && !stunned)
         {
             DashTimer = TickTimer.CreateFromSeconds(Runner, dashDuration);
             DashCooldownTimer = TickTimer.CreateFromSeconds(Runner, dashCooldown);
@@ -101,11 +113,12 @@ public class PlayerMovement : NetworkBehaviour
                 if (p != null && p != gameObject)
                 {
                     Rigidbody2D pRb = p.GetComponent<Rigidbody2D>();
-
-                    if (pRb != null)
+                    PlayerMovement pMov = p.GetComponent<PlayerMovement>();
+                    if (pRb != null && pMov != null)
                     {
                         Vector2 pushbackAngle = ((Vector2.left * Facing) + (Vector2.up * verticalPushbackMultiplier)) * pushForce;
                         pRb.AddForce(pushbackAngle, ForceMode2D.Impulse);
+                        pMov.StunPlayer(stunOtherFor);
                     }
                 }
             }
@@ -119,8 +132,10 @@ public class PlayerMovement : NetworkBehaviour
         }
 
         // --- Movimiento normal ---
-        if (input.Move != 0f) Facing = input.Move > 0f ? 1 : -1;
-        rb.linearVelocity = new Vector2(input.Move * moveSpeed, rb.linearVelocity.y);
+        if (input.Move != 0f && !stunned) Facing = input.Move > 0f ? 1 : -1;
+
+        Vector2 movementMade = new Vector2(input.Move * moveSpeed, rb.linearVelocity.y);
+        rb.linearVelocity = stunned ? rb.linearVelocity : movementMade;
 
         // --- Salto con coyote + buffer ---
         if (!JumpBufferTimer.ExpiredOrNotRunning(Runner) && !CoyoteTimer.ExpiredOrNotRunning(Runner))
@@ -181,5 +196,15 @@ public class PlayerMovement : NetworkBehaviour
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(groundCheck.position, groundCheckSize);
         Gizmos.DrawWireSphere(transform.position, radius);
+    }
+
+    public void StunPlayer(float duration)
+    {
+        if (stunTimer.IsRunning)
+            stunTimer.Restart();
+        else
+            stunTimer.Start();
+        currentStunDuration = duration;
+        stunned = true;
     }
 }

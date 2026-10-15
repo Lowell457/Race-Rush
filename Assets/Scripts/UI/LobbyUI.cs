@@ -20,6 +20,7 @@ public class LobbyUI : MonoBehaviour
     [SerializeField] Button btnListo;
     [SerializeField] TMP_Text txtBtnListo;
     [SerializeField] Button btnIniciar;
+    [SerializeField] private GameObject btnChooseMap;
     [SerializeField] Button btnSalir;
 
     [Header("Config")]
@@ -107,6 +108,8 @@ public class LobbyUI : MonoBehaviour
         btnIniciar.gameObject.SetActive(runner.IsServer);
         btnIniciar.interactable = canStart;
 
+        btnChooseMap.gameObject.SetActive(runner.IsServer);
+
         // Estado general
         if (!full)
             txtEstado.text = $"Esperando jugadores ({count}/{max})...";
@@ -142,5 +145,10 @@ public class LobbyUI : MonoBehaviour
         txtAviso.text = msg;
         txtAviso.gameObject.SetActive(true);
         avisoHasta = Time.time + avisoDuracion;
+    }
+
+    public void CurrentMap(int index)
+    {
+        raceSceneIndex = index + 2;
     }
 }

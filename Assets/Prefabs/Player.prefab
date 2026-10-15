@@ -415,6 +415,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TestMovement
   moveSpeed: 10
+  stunned: 0
   jumpForce: 10
   coyoteTime: 0.1
   jumpBufferTime: 0.1
@@ -425,7 +426,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 8
   dashSpeed: 20
-  dashDuration: 0.1
+  dashDuration: 0.2
   dashCooldown: 1.3
   radius: 1.4
   pushForce: 6
@@ -433,6 +434,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   verticalPushbackMultiplier: 0.6
+  stunOtherFor: 0.5
   _Facing: 0
   playerNameDisplay: {fileID: 5593324568637215264}
   selfPlayerColor: {r: 1, g: 0, b: 0.018630981, a: 1}

@@ -3,6 +3,7 @@ using Fusion.Addons.Physics;
 using Fusion.Sockets;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
@@ -46,6 +47,11 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         go.AddComponent<RunnerSimulatePhysics2D>();
         runner.AddCallbacks(this);
         return runner;
+    }
+
+    public int GetActivePlayersAmount()
+    {
+        return Runner.ActivePlayers.Count();
     }
 
     void KillRunner()
