@@ -15,6 +15,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public string PendingMessage { get; set; }
     public string LocalNickname { get; set; }
+    public int LocalSkin { get; private set; }
 
     public event Action<List<SessionInfo>> SessionListUpdated;
     public event Action<string> StatusChanged;
@@ -33,6 +34,11 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
         if (Instance != null) { Destroy(gameObject); return; }
         Instance = this;
         DontDestroyOnLoad(gameObject);
+    }
+
+    public void ChangeLocalSkin(int skinId)
+    {
+        LocalSkin = skinId;
     }
 
     void SetStatus(string s) { Debug.Log(s); StatusChanged?.Invoke(s); }

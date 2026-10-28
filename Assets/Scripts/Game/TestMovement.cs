@@ -12,6 +12,10 @@ public class PlayerMovement : NetworkBehaviour
     private Timer stunTimer;
     private float currentStunDuration;
 
+    private float currentSpeedMultiplier = 1f;
+    private Timer speedMultTimer;
+    private float speedMultDuration;
+
     [Header("Jump")]
     public float jumpForce = 16f;
     public float coyoteTime = 0.1f;
@@ -55,6 +59,12 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private Color selfPlayerColor;
     [SerializeField] private SpriteRenderer playerSprite;
 
+    [Header("GetPlayerSprites")]
+    [SerializeField] private Sprite player1;
+    [SerializeField] private Sprite player2;
+    [SerializeField] private Sprite player3;
+    [SerializeField] private Sprite player4;
+
     public override void Spawned()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -62,6 +72,7 @@ public class PlayerMovement : NetworkBehaviour
         if (HasInputAuthority)
         {
             RPC_SetDisplayName(NetworkManager.Instance.LocalNickname);
+            RPC_SetPlayerSprites(NetworkManager.Instance.LocalSkin);
             NetworkManager.Instance.SetPlayerTransform(transform);
             NetworkManager.Instance.SetPlayerTransform(rb);
         }
@@ -82,6 +93,14 @@ public class PlayerMovement : NetworkBehaviour
             stunTimer.Reset();
             stunTimer.Stop();
             currentStunDuration = 0;
+        }
+
+        if (speedMultTimer.ElapsedInSeconds >= speedMultDuration)
+        {
+            speedMultTimer.Reset();
+            speedMultTimer.Stop();
+            currentSpeedMultiplier = 1f;
+            speedMultDuration = 0f;
         }
 
         var pressed = input.Buttons.GetPressed(PrevButtons);
@@ -134,7 +153,7 @@ public class PlayerMovement : NetworkBehaviour
         // --- Movimiento normal ---
         if (input.Move != 0f && !stunned) Facing = input.Move > 0f ? 1 : -1;
 
-        Vector2 movementMade = new Vector2(input.Move * moveSpeed, rb.linearVelocity.y);
+        Vector2 movementMade = new Vector2(input.Move * moveSpeed * currentSpeedMultiplier, rb.linearVelocity.y);
         rb.linearVelocity = stunned ? rb.linearVelocity : movementMade;
 
         // --- Salto con coyote + buffer ---
@@ -173,6 +192,28 @@ public class PlayerMovement : NetworkBehaviour
         if (HasInputAuthority) playerNameDisplay.color = selfPlayerColor;
     }
 
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    public void RPC_SetPlayerSprites(int skinId)
+    {
+        Debug.Log("Skin number: " + skinId);
+
+        switch (skinId)
+        {
+            case 1:
+                playerSprite.sprite = player1;
+                break;
+            case 2:
+                playerSprite.sprite = player2;
+                break;
+            case 3:
+                playerSprite.sprite = player3;
+                break;
+            case 4:
+                playerSprite.sprite = player4;
+                break;
+        }
+    }
+
     public void SaveCheckPoint(Transform checkpoint, int priority)
     {
         if (!HasStateAuthority)
@@ -200,11 +241,36 @@ public class PlayerMovement : NetworkBehaviour
 
     public void StunPlayer(float duration)
     {
+        if (currentStunDuration - stunTimer.ElapsedInSeconds >= duration)
+            return;
+
         if (stunTimer.IsRunning)
             stunTimer.Restart();
         else
             stunTimer.Start();
         currentStunDuration = duration;
         stunned = true;
+    }
+
+    public void PushBack(float stunDuration)
+    {
+        if (!HasStateAuthority)
+            return;
+
+        StunPlayer(stunDuration);
+
+        Vector2 pushbackAngle = ((Vector2.left * Facing) + (Vector2.up * verticalPushbackMultiplier)) * pushForce;
+        rb.AddForce(pushbackAngle, ForceMode2D.Impulse);
+    }
+
+    public void ChangeSpeedMultiplier(float newMult, float duration)
+    {
+        currentSpeedMultiplier = newMult;
+        speedMultDuration = duration;
+
+        if (speedMultTimer.IsRunning)
+            speedMultTimer.Restart();
+        else
+            speedMultTimer.Start();
     }
 }
