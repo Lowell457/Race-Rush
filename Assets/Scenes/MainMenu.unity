@@ -1092,6 +1092,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   lobbySceneIndex: 1
   menuSceneIndex: 0
+  playerChatControllerPrefab: {fileID: 3156205097530793281, guid: 60642d0aea253fa478098838433d95f2, type: 3}
 --- !u!4 &648279505
 Transform:
   m_ObjectHideFlags: 0

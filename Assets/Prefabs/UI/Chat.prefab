@@ -266,7 +266,6 @@ GameObject:
   - component: {fileID: 1951188642678632244}
   - component: {fileID: 6943946938526220425}
   - component: {fileID: 699910245923295716}
-  - component: {fileID: 67229125516902420}
   m_Layer: 5
   m_Name: Chat
   m_TagString: Untagged
@@ -373,25 +372,6 @@ MonoBehaviour:
   textHolder: {fileID: 7128220328460474793}
   inputFieldText: {fileID: 3549060080496231840}
   growthSize: 30
---- !u!114 &67229125516902420
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3138664758304320851}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
-  SortKey: 640332748
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours:
-  - {fileID: 699910245923295716}
-  ForceRemoteRenderTimeframe: 0
 --- !u!1 &3301170957957946385
 GameObject:
   m_ObjectHideFlags: 0
@@ -1052,7 +1032,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 699910245923295716}
         m_TargetAssemblyTypeName: ChatManager, Assembly-CSharp
-        m_MethodName: RPC_playerChat
+        m_MethodName: SendChatMessage
         m_Mode: 0
         m_Arguments:
           m_ObjectArgument: {fileID: 0}

@@ -2,8 +2,9 @@ using TMPro;
 using UnityEngine;
 using Photon;
 using Fusion;
+using System;
 
-public class ChatManager : NetworkBehaviour
+public class ChatManager : MonoBehaviour
 {
     [SerializeField] GameObject textHolder;
     TextMeshProUGUI text;
@@ -12,20 +13,31 @@ public class ChatManager : NetworkBehaviour
 
     [SerializeField] float growthSize;
 
+    public static ChatManager instance;
+    public Action<string, string> OnMessageSend; 
 
     private void Awake()
     {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+        }
+
         text = textHolder.GetComponent<TextMeshProUGUI>();
         textRect = textHolder.GetComponent<RectTransform>();
+
+        text.text = NetworkManager.Instance.ChatLog;
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
-    public void RPC_playerChat(string message)
+    public void PlayerChat(string playerName, string message)
     {
-
         if (message.Length > 0)
         {
-            text.text += NetworkManager.Instance.LocalNickname + ": " + message + "\n";
+            text.text += playerName + ": " + message + "\n";
 
             Vector3 temp = textRect.sizeDelta;
             temp.y = textRect.sizeDelta.y + growthSize;
@@ -36,11 +48,16 @@ public class ChatManager : NetworkBehaviour
             textRect.position = temp2;*/
         }
 
-
+        NetworkManager.Instance.SendChatLogs(text.text);
     }
+
+    public void SendChatMessage(string newMessage)
+    {
+        OnMessageSend?.Invoke(NetworkManager.Instance.LocalNickname, newMessage);
+    }
+
     public void ClearInputField()
     {
         inputFieldText.text = string.Empty;
     }
-
 }

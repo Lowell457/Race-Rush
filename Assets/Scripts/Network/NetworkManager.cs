@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.SceneManagement;
 
 public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 {
@@ -29,6 +30,12 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public Transform selfTransform {  get; private set; }
     public Rigidbody2D selfRb { get; private set; }
 
+    private string chatLog;
+
+    public string ChatLog => chatLog;
+
+    [SerializeField] private NetworkObject playerChatControllerPrefab;
+
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }
@@ -39,6 +46,11 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public void ChangeLocalSkin(int skinId)
     {
         LocalSkin = skinId;
+    }
+
+    public void SendChatLogs(string logs)
+    {
+        chatLog = logs;
     }
 
     void SetStatus(string s) { Debug.Log(s); StatusChanged?.Invoke(s); }
@@ -214,6 +226,7 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     public void OnSceneLoadDone(NetworkRunner runner)
     {
+        Runner.Spawn(playerChatControllerPrefab);
     }
 
     public void OnSceneLoadStart(NetworkRunner runner)
