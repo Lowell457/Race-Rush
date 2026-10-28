@@ -23,11 +23,7 @@ public class FinishLine : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-
-
-        collision.gameObject.GetComponent<PlayerMovement>().enabled = !collision.gameObject.GetComponent<PlayerMovement>().enabled ;
-
-        
+        collision.gameObject.GetComponent<PlayerMovement>().enabled = !collision.gameObject.GetComponent<PlayerMovement>().enabled;
 
         if (collision.transform == NetworkManager.Instance.selfTransform)
         {

@@ -3,6 +3,7 @@ using UnityEngine;
 using Photon;
 using Fusion;
 using System;
+using UnityEngine.InputSystem;
 
 public class ChatManager : MonoBehaviour
 {
@@ -14,7 +15,9 @@ public class ChatManager : MonoBehaviour
     [SerializeField] float growthSize;
 
     public static ChatManager instance;
-    public Action<string, string> OnMessageSend; 
+    public Action<string, string> OnMessageSend;
+
+    private bool chatOn;
 
     private void Awake()
     {
@@ -31,6 +34,7 @@ public class ChatManager : MonoBehaviour
         textRect = textHolder.GetComponent<RectTransform>();
 
         text.text = NetworkManager.Instance.ChatLog;
+        ToggleChatOff();
     }
 
     public void PlayerChat(string playerName, string message)
@@ -59,5 +63,31 @@ public class ChatManager : MonoBehaviour
     public void ClearInputField()
     {
         inputFieldText.text = string.Empty;
+    }
+
+    public void ToggleChat(InputAction.CallbackContext context)
+    {
+        if (context.started)
+        {
+            if (chatOn)
+                ToggleChatOff();
+            else ToggleChatOn();
+        }
+    }
+
+    private void ToggleChatOn()
+    {
+        Debug.Log("Chat on");
+        chatOn = true;
+        textHolder.SetActive(true);
+        inputFieldText.gameObject.SetActive(true);
+    }
+
+    private void ToggleChatOff()
+    {
+        Debug.Log("Chat off");
+        chatOn = false;
+        textHolder.SetActive(false);
+        inputFieldText.gameObject.SetActive(false);
     }
 }
