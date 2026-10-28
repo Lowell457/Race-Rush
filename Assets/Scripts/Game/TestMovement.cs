@@ -260,6 +260,7 @@ public class PlayerMovement : NetworkBehaviour
         StunPlayer(stunDuration);
 
         Vector2 pushbackAngle = ((Vector2.left * Facing) + (Vector2.up * verticalPushbackMultiplier)) * pushForce;
+        rb.linearVelocity = Vector2.zero;
         rb.AddForce(pushbackAngle, ForceMode2D.Impulse);
     }
 
