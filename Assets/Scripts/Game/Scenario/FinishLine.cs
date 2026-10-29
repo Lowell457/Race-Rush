@@ -95,6 +95,13 @@ public class FinishLine : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]    
     public void RPC_ShowEndResults(string[] positions)
     {
+        Debug.Log("META");
+
+        foreach (string position in positions)
+        {
+            Debug.Log(position);
+        }
+
         wfopText.SetActive(false);
         PositionText.SetActive(true);
 
@@ -108,7 +115,5 @@ public class FinishLine : NetworkBehaviour
         }
         
         ShowPlayerPosition(myPos);
-
-        Debug.Log(playersFinished);
     }
 }
