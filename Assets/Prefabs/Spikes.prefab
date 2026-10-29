@@ -100,8 +100,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 6920008786574056553}
-  - component: {fileID: 1834276599852271418}
   - component: {fileID: 4960062423930000857}
+  - component: {fileID: 905635746429814705}
   m_Layer: 0
   m_Name: Spikes
   m_TagString: Untagged
@@ -125,19 +125,6 @@ Transform:
   - {fileID: 75306257268975041}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1834276599852271418
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8153441887644637935}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0b3cca66201233a4b926519340319d41, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Spikes
-  stunDuration: 1.5
 --- !u!61 &4960062423930000857
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -184,3 +171,18 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 2.4, y: 0.44}
   m_EdgeRadius: 0
+--- !u!114 &905635746429814705
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8153441887644637935}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 90df4f85ddc5c974baf986a839665595, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::KillBox
+  playerLayer:
+    serializedVersion: 2
+    m_Bits: 64

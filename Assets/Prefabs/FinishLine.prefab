@@ -103,6 +103,8 @@ GameObject:
   - component: {fileID: 8534863720661107557}
   - component: {fileID: 7666140446872195989}
   - component: {fileID: 8029952527642307879}
+  - component: {fileID: 123074132688858390}
+  - component: {fileID: 7721202025168619518}
   m_Layer: 0
   m_Name: FinishLine
   m_TagString: Untagged
@@ -229,7 +231,7 @@ BoxCollider2D:
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 1, y: 1}
+  m_Size: {x: 1.92, y: 1.83}
   m_EdgeRadius: 0
 --- !u!114 &8029952527642307879
 MonoBehaviour:
@@ -246,3 +248,40 @@ MonoBehaviour:
   VictoryScreen: {fileID: 0}
   wfopText: {fileID: 0}
   PositionText: {fileID: 0}
+--- !u!114 &123074132688858390
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9115190581548051586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 1289647493
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 8029952527642307879}
+  - {fileID: 7721202025168619518}
+  ForceRemoteRenderTimeframe: 0
+--- !u!114 &7721202025168619518
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9115190581548051586}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 158639473, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkTransform
+  _stateAuthorityChangeErrorCorrectionDelta: 0
+  SyncScale: 0
+  SyncParent: 0
+  _autoAOIOverride: 1
+  DisableSharedModeInterpolation: 0

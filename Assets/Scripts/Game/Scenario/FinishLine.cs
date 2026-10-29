@@ -13,7 +13,10 @@ public class FinishLine : NetworkBehaviour
 
     private int playerAmmount;
 
-    int playersFinished;
+    [Networked]
+    public int playersFinished { get; set; }
+
+    private string[] finishList;
 
     private void Awake()
     {
@@ -28,10 +31,14 @@ public class FinishLine : NetworkBehaviour
 
         UpdatePlayerAmmount();
         posTextTMP = PositionText.GetComponent<TextMeshProUGUI>();
+        finishList = new string[playerAmmount];
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
+        if (!HasStateAuthority)
+            return;
+
         PlayerMovement plMov = collision.gameObject.GetComponent<PlayerMovement>();
 
         plMov.RPC_WinScreen();
@@ -42,6 +49,18 @@ public class FinishLine : NetworkBehaviour
         }
 
         playersFinished++;
+        
+        for (int i = 0; i > finishList.Length; i++)
+        {
+            if (finishList[i] == default)
+            {
+                finishList[i] = plMov.GetPlayerName();
+                break;
+            }
+        }
+
+        if (playersFinished >= playerAmmount)
+            RPC_ShowEndResults(finishList);
     }
 
     public void ShowPlayerPosition(int position)
@@ -73,15 +92,23 @@ public class FinishLine : NetworkBehaviour
         VictoryScreen.SetActive(true);
     }
 
-    public void ShowEndResults()
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]    
+    public void RPC_ShowEndResults(string[] positions)
     {
-        if (playersFinished >= playerAmmount)
-        {
-            wfopText.SetActive(false);
-            PositionText.SetActive(true);
-            ShowPlayerPosition(1); //Aca poner la referencia a la posicion del player
+        wfopText.SetActive(false);
+        PositionText.SetActive(true);
 
-            Debug.Log(playersFinished);
+        int myPos = 0;
+        for (int i = 0; i < positions.Length; i++)
+        {
+            if (positions[i].Equals(NetworkManager.Instance.LocalNickname))
+            {
+                myPos = i + 1;
+            }
         }
+        
+        ShowPlayerPosition(myPos);
+
+        Debug.Log(playersFinished);
     }
 }

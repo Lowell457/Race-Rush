@@ -105,7 +105,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0e88556e8dcf9dc438f241227253f539, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::SpeedBoost
-  speedMultiplierPercent: 1.8
+  speedMultiplierPercent: 1.2
   boostDuration: 1.3
 --- !u!61 &1514290377564972562
 BoxCollider2D:

@@ -288,4 +288,9 @@ public class PlayerMovement : NetworkBehaviour
         if (HasStateAuthority)
             finishLineReached = true;
     }
+
+    public string GetPlayerName()
+    {
+        return playerNameDisplay.text;
+    }
 }
