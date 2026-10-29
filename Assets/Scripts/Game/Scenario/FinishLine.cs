@@ -54,7 +54,10 @@ public class FinishLine : NetworkBehaviour
         finishList[playersFinished - 1] = plMov.GetPlayerName();
 
         if (playersFinished >= playerAmmount)
+        {
             RPC_ShowEndResults(finishList);
+            Invoke("GoToLobby", 3f);
+        }
     }
 
     public void ShowPlayerPosition(int position)
@@ -69,6 +72,15 @@ public class FinishLine : NetworkBehaviour
             case 1:
                 if (playerAmmount == 1) { posTextTMP.text = "You Made it, maybe try getting some friends next"; }
                 posTextTMP.text = "You came in First";
+                break;
+            case 2:
+                posTextTMP.text = "You came in Second";
+                break;
+            case 3:
+                posTextTMP.text = "You came in Third";
+                break;
+            case 4:
+                posTextTMP.text = "You came in Last";
                 break;
             default:
                 posTextTMP.text = "You came in " + position;
@@ -102,5 +114,10 @@ public class FinishLine : NetworkBehaviour
         }
         
         ShowPlayerPosition(myPos);
+    }
+
+    private void GoToLobby()
+    {
+        Runner.LoadScene("Lobby");
     }
 }
