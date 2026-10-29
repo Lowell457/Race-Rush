@@ -741,17 +741,6 @@
                     "action": "ToggleChat",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ed6c0935-796d-424c-a77b-3f460fbb8e94",
-                    "path": "<Keyboard>/c",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "ToggleChat",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         }

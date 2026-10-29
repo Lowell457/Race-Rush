@@ -40,6 +40,8 @@ public class FinishLine : NetworkBehaviour
         if (!HasStateAuthority)
             return;
 
+        UpdatePlayerAmmount();
+
         PlayerMovement plMov = collision.gameObject.GetComponent<PlayerMovement>();
 
         plMov.RPC_WinScreen();

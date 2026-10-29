@@ -373,6 +373,8 @@ MonoBehaviour:
   textHolder: {fileID: 7128220328460474793}
   inputFieldText: {fileID: 3549060080496231840}
   growthSize: 30
+  textHolderObject: {fileID: 3301170957957946385}
+  inputFieldObject: {fileID: 6439248818623857995}
 --- !u!114 &8505226040549694604
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -988,7 +990,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1189086142061203328}
   m_HandleRect: {fileID: 5372051461573788568}
   m_Direction: 2
-  m_Value: 0
+  m_Value: 1
   m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
@@ -1442,7 +1444,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0}
   m_AnchorMax: {x: 0.5, y: 0}
-  m_AnchoredPosition: {x: -182, y: 0}
+  m_AnchoredPosition: {x: -182, y: -20}
   m_SizeDelta: {x: 360, y: 20}
   m_Pivot: {x: 0, y: 0}
 --- !u!222 &6646973387418703531

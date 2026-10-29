@@ -52,6 +52,8 @@ public class PlayerMovement : NetworkBehaviour
     public bool IsDashing => DashTimer.IsRunning && !DashTimer.Expired(Runner);
     public bool DashReady => DashCooldownTimer.ExpiredOrNotRunning(Runner) && !AirDashUsed;
 
+    private bool stopDash;
+
     Rigidbody2D rb;
 
     private bool finishLineReached = false;
@@ -105,6 +107,12 @@ public class PlayerMovement : NetworkBehaviour
             speedMultDuration = 0f;
         }
 
+        if (!IsDashing && stopDash)
+        {
+            rb.linearVelocity = Vector2.zero;
+            stopDash = false;
+        }
+
         var pressed = input.Buttons.GetPressed(PrevButtons);
         PrevButtons = input.Buttons;
 
@@ -123,6 +131,7 @@ public class PlayerMovement : NetworkBehaviour
         {
             DashTimer = TickTimer.CreateFromSeconds(Runner, dashDuration);
             DashCooldownTimer = TickTimer.CreateFromSeconds(Runner, dashCooldown);
+            stopDash = true;
             if (!grounded) AirDashUsed = true;   // un dash aéreo por salto
 
             //Push players back
