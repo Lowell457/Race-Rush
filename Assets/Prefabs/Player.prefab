@@ -361,7 +361,7 @@ MonoBehaviour:
   jumpBufferTime: 0.1
   jumpCutMultiplier: 0.5
   groundCheck: {fileID: 6784764863867085387}
-  groundCheckSize: {x: 0.5, y: 0.1}
+  groundCheckSize: {x: 0.4, y: 0.1}
   groundLayer:
     serializedVersion: 2
     m_Bits: 8
