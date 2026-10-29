@@ -17,7 +17,9 @@ public class ChatManager : MonoBehaviour
     public static ChatManager instance;
     public Action<string, string> OnMessageSend;
 
-    private bool chatOn;
+    private bool chatOn = true;
+    [SerializeField] private GameObject textHolderObject;
+    [SerializeField] private GameObject inputFieldObject;
 
     private void Awake()
     {
@@ -33,8 +35,8 @@ public class ChatManager : MonoBehaviour
         text = textHolder.GetComponent<TextMeshProUGUI>();
         textRect = textHolder.GetComponent<RectTransform>();
 
-        text.text = NetworkManager.Instance.ChatLog;
         ToggleChatOff();
+        text.text = NetworkManager.Instance.ChatLog;
     }
 
     public void PlayerChat(string playerName, string message)
@@ -77,17 +79,15 @@ public class ChatManager : MonoBehaviour
 
     private void ToggleChatOn()
     {
-        Debug.Log("Chat on");
         chatOn = true;
-        textHolder.SetActive(true);
-        inputFieldText.gameObject.SetActive(true);
+        textHolderObject.SetActive(true);
+        inputFieldObject.SetActive(true);
     }
 
     private void ToggleChatOff()
     {
-        Debug.Log("Chat off");
         chatOn = false;
-        textHolder.SetActive(false);
-        inputFieldText.gameObject.SetActive(false);
+        textHolderObject.SetActive(false);
+        inputFieldObject.SetActive(false);
     }
 }
