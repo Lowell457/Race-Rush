@@ -2,6 +2,7 @@ using UnityEngine;
 using Fusion;
 using System.Linq;
 using TMPro;
+using UnityEngine.UIElements;
 public class FinishLine : NetworkBehaviour
 {
     public static FinishLine instance;
@@ -49,15 +50,8 @@ public class FinishLine : NetworkBehaviour
         }
 
         playersFinished++;
-        
-        for (int i = 0; i > finishList.Length; i++)
-        {
-            if (finishList[i] == default)
-            {
-                finishList[i] = plMov.GetPlayerName();
-                break;
-            }
-        }
+
+        finishList[playersFinished - 1] = plMov.GetPlayerName();
 
         if (playersFinished >= playerAmmount)
             RPC_ShowEndResults(finishList);
@@ -95,13 +89,6 @@ public class FinishLine : NetworkBehaviour
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]    
     public void RPC_ShowEndResults(string[] positions)
     {
-        Debug.Log("META");
-
-        foreach (string position in positions)
-        {
-            Debug.Log(position);
-        }
-
         wfopText.SetActive(false);
         PositionText.SetActive(true);
 
