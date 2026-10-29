@@ -2,8 +2,9 @@ using UnityEngine;
 using Fusion;
 using System.Linq;
 using TMPro;
-public class FinishLine : MonoBehaviour
+public class FinishLine : NetworkBehaviour
 {
+    public static FinishLine instance;
 
     [SerializeField] GameObject VictoryScreen;
     [SerializeField] GameObject wfopText;
@@ -11,35 +12,36 @@ public class FinishLine : MonoBehaviour
     TextMeshProUGUI posTextTMP;
 
     private int playerAmmount;
-    
 
     int playersFinished;
 
     private void Awake()
     {
+        if (instance != null)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            instance = this;
+        }
+
         UpdatePlayerAmmount();
         posTextTMP = PositionText.GetComponent<TextMeshProUGUI>();
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        collision.gameObject.GetComponent<PlayerMovement>().enabled = !collision.gameObject.GetComponent<PlayerMovement>().enabled;
+        PlayerMovement plMov = collision.gameObject.GetComponent<PlayerMovement>();
 
-        if (collision.transform == NetworkManager.Instance.selfTransform)
+        plMov.RPC_WinScreen();
+        
+        if (plMov != null)
         {
-            VictoryScreen.SetActive(true);
+            plMov.PlayerStopForever();
         }
 
         playersFinished++;
-
-        if (playersFinished >= playerAmmount) 
-        {
-            wfopText.SetActive(false);
-            PositionText.SetActive(true);
-            ShowPlayerPosition(1); //Aca poner la referencia a la posicion del player
-        }
-
-        Debug.Log(playersFinished);
     }
 
     public void ShowPlayerPosition(int position)
@@ -66,6 +68,20 @@ public class FinishLine : MonoBehaviour
         playerAmmount = NetworkManager.Instance.GetActivePlayersAmount();
     }
 
+    public void TriggerWinScreen()
+    {
+        VictoryScreen.SetActive(true);
+    }
 
+    public void ShowEndResults()
+    {
+        if (playersFinished >= playerAmmount)
+        {
+            wfopText.SetActive(false);
+            PositionText.SetActive(true);
+            ShowPlayerPosition(1); //Aca poner la referencia a la posicion del player
 
+            Debug.Log(playersFinished);
+        }
+    }
 }

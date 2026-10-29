@@ -54,6 +54,8 @@ public class PlayerMovement : NetworkBehaviour
 
     Rigidbody2D rb;
 
+    private bool finishLineReached = false;
+
     [Header("Visual display")]
     [SerializeField] private TextMeshPro playerNameDisplay;
     [SerializeField] private Color selfPlayerColor;
@@ -82,9 +84,9 @@ public class PlayerMovement : NetworkBehaviour
 
     public override void FixedUpdateNetwork()
     {
-        /*if (Runner.IsForward && Runner.Tick % 60 == 0)
-            Debug.Log($"[{name}] HasInputAuth={Object.HasInputAuthority} StateAuth={HasStateAuthority} GetInput={GetInput(out PlayerInputData d)} Move={d.Move}");
-        */
+        if (finishLineReached || !HasStateAuthority)
+            return;
+
         if (!GetInput(out PlayerInputData input)) return;
 
         if (stunned && stunTimer.ElapsedInSeconds >= currentStunDuration)
@@ -273,5 +275,17 @@ public class PlayerMovement : NetworkBehaviour
             speedMultTimer.Restart();
         else
             speedMultTimer.Start();
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.InputAuthority)]
+    public void RPC_WinScreen()
+    {
+        FinishLine.instance.TriggerWinScreen();
+    }
+
+    public void PlayerStopForever()
+    {
+        if (HasStateAuthority)
+            finishLineReached = true;
     }
 }
