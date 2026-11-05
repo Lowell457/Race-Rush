@@ -15,8 +15,25 @@ public class SkinChoose : MonoBehaviour
 
     private void Awake()
     {
-        currentSkin = 1;
-        skinShow.sprite = skin1;
+        currentSkin = NetworkManager.Instance.LocalSkin;
+        if (currentSkin == default)
+            currentSkin = 1;
+
+        switch (currentSkin)
+        {
+            case 1:
+                skinShow.sprite = skin1;
+                break;
+            case 2:
+                skinShow.sprite = skin2;
+                break;
+            case 3:
+                skinShow.sprite = skin3;
+                break;
+            case 4:
+                skinShow.sprite = skin4;
+                break;
+        }
     }
 
     public void NextSkin()

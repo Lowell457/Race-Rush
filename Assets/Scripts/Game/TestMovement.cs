@@ -62,12 +62,17 @@ public class PlayerMovement : NetworkBehaviour
     [SerializeField] private TextMeshPro playerNameDisplay;
     [SerializeField] private Color selfPlayerColor;
     [SerializeField] private SpriteRenderer playerSprite;
+    [SerializeField] private Animator animator;
 
     [Header("GetPlayerSprites")]
     [SerializeField] private Sprite player1;
     [SerializeField] private Sprite player2;
     [SerializeField] private Sprite player3;
     [SerializeField] private Sprite player4;
+    [SerializeField] private AnimatorOverrideController pinkAnims;
+    [SerializeField] private AnimatorOverrideController maskedAnims;
+    [SerializeField] private AnimatorOverrideController virtualAnims;
+    [SerializeField] private AnimatorOverrideController frogAnims;
 
     public override void Spawned()
     {
@@ -76,7 +81,7 @@ public class PlayerMovement : NetworkBehaviour
         if (HasInputAuthority)
         {
             RPC_SetDisplayName(NetworkManager.Instance.LocalNickname);
-            RPC_SetPlayerSprites(NetworkManager.Instance.LocalSkin);
+            RPC_ChangeAnim(NetworkManager.Instance.LocalSkin);
             NetworkManager.Instance.SetPlayerTransform(transform);
             NetworkManager.Instance.SetPlayerTransform(rb);
         }
@@ -134,9 +139,11 @@ public class PlayerMovement : NetworkBehaviour
             stopDash = true;
             if (!grounded) AirDashUsed = true;   // un dash aéreo por salto
 
+            RPC_DashAnim();
+
             //Push players back
             var players = Physics2D.OverlapCircleAll(transform.position, radius, playerLayer);
-            
+
 
             foreach (var p in players)
             {
@@ -183,6 +190,11 @@ public class PlayerMovement : NetworkBehaviour
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, rb.linearVelocity.y * jumpCutMultiplier);
             JumpCutDone = true;
         }
+
+        //Anim State
+        animator.SetBool("IsGrounded", grounded);
+        animator.SetBool("IsFalling", rb.linearVelocityY < 0);
+        animator.SetBool("IsMoving", rb.linearVelocityX != 0);
     }
 
     public void KillPlayer()
@@ -203,7 +215,7 @@ public class PlayerMovement : NetworkBehaviour
         if (HasInputAuthority) playerNameDisplay.color = selfPlayerColor;
     }
 
-    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+   /* [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
     public void RPC_SetPlayerSprites(int skinId)
     {
         Debug.Log("Skin number: " + skinId);
@@ -223,7 +235,7 @@ public class PlayerMovement : NetworkBehaviour
                 playerSprite.sprite = player4;
                 break;
         }
-    }
+    }*/
 
     public void SaveCheckPoint(Transform checkpoint, int priority)
     {
@@ -239,7 +251,7 @@ public class PlayerMovement : NetworkBehaviour
 
     private void SetSpriteDirection()
     {
-        playerSprite.flipX = Facing != 1; 
+        playerSprite.flipX = Facing != 1;
     }
 
     void OnDrawGizmosSelected()
@@ -261,6 +273,7 @@ public class PlayerMovement : NetworkBehaviour
             stunTimer.Start();
         currentStunDuration = duration;
         stunned = true;
+        animator.SetTrigger("Stun");
     }
 
     public void PushBack(float stunDuration)
@@ -301,5 +314,33 @@ public class PlayerMovement : NetworkBehaviour
     public string GetPlayerName()
     {
         return playerNameDisplay.text;
+    }
+
+    [Rpc(RpcSources.InputAuthority, RpcTargets.All)]
+    private void RPC_ChangeAnim(int character)
+    {
+        Debug.Log(character);
+
+        switch (character)
+        {
+            case 1:
+                animator.runtimeAnimatorController = pinkAnims;
+                break;
+            case 2:
+                animator.runtimeAnimatorController = maskedAnims;
+                break;
+            case 3:
+                animator.runtimeAnimatorController = frogAnims;
+                break;
+            case 4:
+                animator.runtimeAnimatorController = virtualAnims;
+                break;
+        }
+    }
+
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    private void RPC_DashAnim()
+    {
+        animator.SetTrigger("Dash");
     }
 }

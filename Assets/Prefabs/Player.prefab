@@ -222,6 +222,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6369002696241019814}
   - component: {fileID: 295751755819268032}
+  - component: {fileID: 8769752010223212963}
   m_Layer: 6
   m_Name: Visuals
   m_TagString: Untagged
@@ -238,7 +239,7 @@ Transform:
   m_GameObject: {fileID: 5793553476545271962}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 0, y: 0.061, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -303,6 +304,28 @@ SpriteRenderer:
   m_SpriteTileMode: 0
   m_WasSpriteAssigned: 1
   m_SpriteSortPoint: 0
+--- !u!95 &8769752010223212963
+Animator:
+  serializedVersion: 7
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5793553476545271962}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 22100000, guid: 0f3a0ba40abd2bf4a8b32a1946fa4250, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_AnimatePhysics: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1 &6466058805136151603
 GameObject:
   m_ObjectHideFlags: 0
@@ -379,10 +402,15 @@ MonoBehaviour:
   playerNameDisplay: {fileID: 5593324568637215264}
   selfPlayerColor: {r: 1, g: 0, b: 0.018630981, a: 1}
   playerSprite: {fileID: 295751755819268032}
+  animator: {fileID: 8769752010223212963}
   player1: {fileID: -6367560908665664636, guid: ab8145983089c5e4eacbf000735af8ef, type: 3}
   player2: {fileID: -6367560908665664636, guid: 0142060b295f5a341840c1e9ccb6bb2c, type: 3}
   player3: {fileID: -6367560908665664636, guid: 82aff82fabb21384b8e3f90f2a79e2dc, type: 3}
   player4: {fileID: -6367560908665664636, guid: f2cadaa25890f9d4bba9d9cf1a22e387, type: 3}
+  pinkAnims: {fileID: 22100000, guid: 0f3a0ba40abd2bf4a8b32a1946fa4250, type: 2}
+  maskedAnims: {fileID: 22100000, guid: b3e538bbcf64af04da2f4477e5caf9e1, type: 2}
+  virtualAnims: {fileID: 22100000, guid: 030b4a44948a7f9498a57757366bf81b, type: 2}
+  frogAnims: {fileID: 22100000, guid: 51ddc45ad8c47ea4cbc383e578f23299, type: 2}
 --- !u!50 &5998908191395612225
 Rigidbody2D:
   serializedVersion: 5
@@ -406,7 +434,7 @@ Rigidbody2D:
   m_ExcludeLayers:
     serializedVersion: 2
     m_Bits: 0
-  m_Interpolate: 0
+  m_Interpolate: 1
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
