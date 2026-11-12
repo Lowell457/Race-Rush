@@ -38,6 +38,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
 
     [SerializeField] private NetworkObject playerChatControllerPrefab;
 
+    public Action StartRace;
+
     void Awake()
     {
         if (Instance != null) { Destroy(gameObject); return; }

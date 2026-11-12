@@ -16,6 +16,8 @@ public class PlayerMovement : NetworkBehaviour
     private Timer speedMultTimer;
     private float speedMultDuration;
 
+    private bool raceHasStarted = false;
+
     [Header("Jump")]
     public float jumpForce = 16f;
     public float coyoteTime = 0.1f;
@@ -79,6 +81,8 @@ public class PlayerMovement : NetworkBehaviour
         rb = GetComponent<Rigidbody2D>();
         selfPlayerColor = NetworkManager.Instance.LocalNameColor;
 
+        NetworkManager.Instance.StartRace += StartTheRace;
+
         if (HasInputAuthority)
         {
             RPC_SetDisplayName(NetworkManager.Instance.LocalNickname);
@@ -90,9 +94,14 @@ public class PlayerMovement : NetworkBehaviour
         if (HasStateAuthority) Facing = 1;
     }
 
+    private void StartTheRace()
+    {
+        raceHasStarted = true;
+    }
+
     public override void FixedUpdateNetwork()
     {
-        if (finishLineReached || !HasStateAuthority)
+        if (finishLineReached || !HasStateAuthority || !raceHasStarted)
             return;
 
         if (!GetInput(out PlayerInputData input)) return;
