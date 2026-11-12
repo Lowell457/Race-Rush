@@ -18,6 +18,8 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     public string LocalNickname { get; set; }
     public int LocalSkin { get; private set; }
 
+    public Color LocalNameColor;
+
     public event Action<List<SessionInfo>> SessionListUpdated;
     public event Action<string> StatusChanged;
 

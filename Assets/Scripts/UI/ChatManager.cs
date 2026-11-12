@@ -4,6 +4,7 @@ using Photon;
 using Fusion;
 using System;
 using UnityEngine.InputSystem;
+using UnityEngine.TextCore;
 
 public class ChatManager : MonoBehaviour
 {
@@ -15,7 +16,7 @@ public class ChatManager : MonoBehaviour
     [SerializeField] float growthSize;
 
     public static ChatManager instance;
-    public Action<string, string> OnMessageSend;
+    public Action<string, string, string> OnMessageSend;
 
     private bool chatOn = true;
     [SerializeField] private GameObject textHolderObject;
@@ -34,16 +35,16 @@ public class ChatManager : MonoBehaviour
 
         text = textHolder.GetComponent<TextMeshProUGUI>();
         textRect = textHolder.GetComponent<RectTransform>();
-
+        
         ToggleChatOff();
         text.text = NetworkManager.Instance.ChatLog;
     }
 
-    public void PlayerChat(string playerName, string message)
+    public void PlayerChat(string playerName, string message, string hex)
     {
         if (message.Length > 0)
         {
-            text.text += playerName + ": " + message + "\n";
+            text.text += $"<color=#{hex}>{playerName}</color>: {message}\n";
 
             Vector3 temp = textRect.sizeDelta;
             temp.y = textRect.sizeDelta.y + growthSize;
@@ -59,7 +60,7 @@ public class ChatManager : MonoBehaviour
 
     public void SendChatMessage(string newMessage)
     {
-        OnMessageSend?.Invoke(NetworkManager.Instance.LocalNickname, newMessage);
+        OnMessageSend?.Invoke(NetworkManager.Instance.LocalNickname, newMessage, ColorUtility.ToHtmlStringRGB(NetworkManager.Instance.LocalNameColor));
     }
 
     public void ClearInputField()

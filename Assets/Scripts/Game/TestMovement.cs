@@ -77,6 +77,7 @@ public class PlayerMovement : NetworkBehaviour
     public override void Spawned()
     {
         rb = GetComponent<Rigidbody2D>();
+        selfPlayerColor = NetworkManager.Instance.LocalNameColor;
 
         if (HasInputAuthority)
         {

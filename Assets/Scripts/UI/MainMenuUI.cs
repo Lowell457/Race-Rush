@@ -24,7 +24,10 @@ public class MainMenuUI : MonoBehaviour
     [SerializeField] GameObject txtSinPartidas;
     [SerializeField] Button btnVolver;
 
+
+    [Header("Panel Player Data")]
     [SerializeField] TMP_InputField inputNombre;
+    [SerializeField] Image colorDisplayer;
 
     bool busy;
 
@@ -83,6 +86,7 @@ public class MainMenuUI : MonoBehaviour
         if (string.IsNullOrWhiteSpace(inputNombre.text)) return;
 
         SaveNickname();
+        SaveColour();
         busy = true;
         SetInteractable(false);
 
@@ -101,6 +105,7 @@ public class MainMenuUI : MonoBehaviour
         if (string.IsNullOrWhiteSpace(inputNombre.text)) return;
 
         SaveNickname();
+        SaveColour();
         busy = true;
         SetInteractable(false);
 
@@ -176,5 +181,12 @@ public class MainMenuUI : MonoBehaviour
     {
         NM.LocalNickname = inputNombre.text.Trim();
         PlayerPrefs.SetString("nick", NM.LocalNickname);
+    }
+
+    void SaveColour()
+    {
+
+        NM.LocalNameColor = colorDisplayer.color;
+
     }
 }

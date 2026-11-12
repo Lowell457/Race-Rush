@@ -11,11 +11,11 @@ public class PlayerChatController : NetworkBehaviour
     }
 
     [Rpc(RpcSources.All, RpcTargets.All)]
-    public void RPC_SendMessage(string playerName, string message)
+    public void RPC_SendMessage(string playerName, string message, string hex)
     {
         if (message.Length >= 20)
             return;
 
-        ChatManager.instance.PlayerChat(playerName, message);
+        ChatManager.instance.PlayerChat(playerName, message, hex);
     }
 }
