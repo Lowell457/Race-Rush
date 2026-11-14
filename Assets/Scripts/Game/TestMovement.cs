@@ -131,13 +131,19 @@ public class PlayerMovement : NetworkBehaviour
         var pressed = input.Buttons.GetPressed(PrevButtons);
         PrevButtons = input.Buttons;
 
-        Collider2D groundCol = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer); 
-        bool grounded = groundCol != null;                                                                     
+        Collider2D groundCol = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
+        bool grounded = groundCol != null;
 
-        MovingPlatform platform = null;                                                                        
-        if (groundCol != null && groundCol.attachedRigidbody != null)                                          
-            platform = groundCol.attachedRigidbody.GetComponent<MovingPlatform>();                             
-        Vector2 platformVel = platform != null ? platform.Velocity : Vector2.zero;                              
+        if (grounded)
+        {
+            CoyoteTimer = TickTimer.CreateFromSeconds(Runner, coyoteTime);
+            AirDashUsed = false;
+        }
+
+        MovingPlatform platform = null;
+        if (groundCol != null && groundCol.attachedRigidbody != null)
+            platform = groundCol.attachedRigidbody.GetComponent<MovingPlatform>();
+        Vector2 platformVel = platform != null ? platform.Velocity : Vector2.zero;
 
         if (pressed.IsSet(InputButton.Jump) && !stunned)
             JumpBufferTimer = TickTimer.CreateFromSeconds(Runner, jumpBufferTime);
