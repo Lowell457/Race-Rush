@@ -131,12 +131,13 @@ public class PlayerMovement : NetworkBehaviour
         var pressed = input.Buttons.GetPressed(PrevButtons);
         PrevButtons = input.Buttons;
 
-        bool grounded = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer);
-        if (grounded)
-        {
-            CoyoteTimer = TickTimer.CreateFromSeconds(Runner, coyoteTime);
-            AirDashUsed = false;
-        }
+        Collider2D groundCol = Physics2D.OverlapBox(groundCheck.position, groundCheckSize, 0f, groundLayer); 
+        bool grounded = groundCol != null;                                                                     
+
+        MovingPlatform platform = null;                                                                        
+        if (groundCol != null && groundCol.attachedRigidbody != null)                                          
+            platform = groundCol.attachedRigidbody.GetComponent<MovingPlatform>();                             
+        Vector2 platformVel = platform != null ? platform.Velocity : Vector2.zero;                              
 
         if (pressed.IsSet(InputButton.Jump) && !stunned)
             JumpBufferTimer = TickTimer.CreateFromSeconds(Runner, jumpBufferTime);
@@ -182,6 +183,9 @@ public class PlayerMovement : NetworkBehaviour
         if (input.Move != 0f && !stunned) Facing = input.Move > 0f ? 1 : -1;
 
         Vector2 movementMade = new Vector2(input.Move * moveSpeed * currentSpeedMultiplier, rb.linearVelocity.y);
+        if (platformVel.y < 0f && movementMade.y <= 0f){
+            movementMade.y = platformVel.y;
+        }
         rb.linearVelocity = stunned ? rb.linearVelocity : movementMade;
 
         // --- Salto con coyote + buffer ---
@@ -204,7 +208,7 @@ public class PlayerMovement : NetworkBehaviour
         //Anim State
         animator.SetBool("IsGrounded", grounded);
         animator.SetBool("IsFalling", rb.linearVelocityY < 0);
-        animator.SetBool("IsMoving", rb.linearVelocityX != 0);
+        animator.SetBool("IsMoving", Mathf.Abs(rb.linearVelocityX - platformVel.x) > 0.01f); 
     }
 
     public void KillPlayer()
