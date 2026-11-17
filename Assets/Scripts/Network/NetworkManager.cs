@@ -245,4 +245,52 @@ public class NetworkManager : MonoBehaviour, INetworkRunnerCallbacks
     {
         selfRb = player;
     }
+    public const string LastRaceKey = "lastRace";
+    string localLastRace;
+
+    public static string EncodeResults(IList<string> names, int finishedCount)
+    {
+        var parts = new List<string>();
+        for (int i = 0; i < names.Count; i++)
+            parts.Add(i < finishedCount ? names[i] : "!" + names[i]);
+        return string.Join("|", parts);
+    }
+
+    // Todos los clientes (se llama desde el RPC de resultados)
+    public void SetLocalLastRace(string raw)
+    {
+        localLastRace = raw;
+        Debug.Log($"[LastRace] Copia local guardada: {raw}");
+    }
+
+    // Solo el host: para que también lo vean los que entran después
+    public void SaveLastRaceResults(IList<string> names, int finishedCount)
+    {
+        if (Runner == null || !Runner.IsServer)
+        {
+            Debug.LogWarning("[LastRace] SaveLastRaceResults llamado sin ser host / sin runner");
+            return;
+        }
+
+        string raw = EncodeResults(names, finishedCount);
+        Runner.SessionInfo.UpdateCustomProperties(new Dictionary<string, SessionProperty>
+    {
+        { LastRaceKey, raw }
+    });
+        Debug.Log($"[LastRace] Propiedad de sesión enviada: {raw}");
+    }
+
+    public string GetLastRaceRaw()
+    {
+        // 1º la propiedad de sesión (sirve para los que entraron tarde)
+        if (Runner != null && Runner.SessionInfo != null && Runner.SessionInfo.IsValid)
+        {
+            var props = Runner.SessionInfo.Properties;
+            if (props != null && props.TryGetValue(LastRaceKey, out var p) && p.PropertyValue is string s && s.Length > 0)
+                return s;
+        }
+
+        // 2º la copia local (sirve para todos los que corrieron)
+        return localLastRace;
+    }
 }

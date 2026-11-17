@@ -17,6 +17,7 @@ public class PlayerMovement : NetworkBehaviour
     private float speedMultDuration;
 
     private bool raceHasStarted = false;
+    public bool HasFinished => finishLineReached;
 
     [Header("Jump")]
     public float jumpForce = 16f;
@@ -327,8 +328,9 @@ public class PlayerMovement : NetworkBehaviour
 
     public void PlayerStopForever()
     {
-        if (HasStateAuthority)
-            finishLineReached = true;
+        if (!HasStateAuthority) return;
+        finishLineReached = true;
+        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
     }
 
     public string GetPlayerName()

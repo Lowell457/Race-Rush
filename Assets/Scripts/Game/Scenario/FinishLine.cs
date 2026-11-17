@@ -1,8 +1,8 @@
-using UnityEngine;
+using System.Collections.Generic;
 using Fusion;
-using System.Linq;
 using TMPro;
-using UnityEngine.UIElements;
+using UnityEngine;
+
 public class FinishLine : NetworkBehaviour
 {
     public static FinishLine instance;
@@ -10,116 +10,133 @@ public class FinishLine : NetworkBehaviour
     [SerializeField] GameObject VictoryScreen;
     [SerializeField] GameObject wfopText;
     [SerializeField] GameObject PositionText;
+
+    [Header("Cuenta regresiva final")]
+    [SerializeField] float finishCountdownSeconds = 10f;
+    [SerializeField] TextMeshProUGUI finishCountdownText;
+
     TextMeshProUGUI posTextTMP;
 
-    private int playerAmmount;
+    [Networked] public int playersFinished { get; set; }
+    [Networked] TickTimer FinishCountdown { get; set; }
+    [Networked] NetworkBool RaceEnded { get; set; }
 
-    [Networked]
-    public int playersFinished { get; set; }
+    readonly List<string> finishList = new();   // solo lo usa el host
 
-    private string[] finishList;
-
-    private void Awake()
+    void Awake()
     {
-        if (instance != null)
-        {
-            Destroy(gameObject);
-        }
-        else
-        {
-            instance = this;
-        }
+        if (instance != null && instance != this) { Destroy(gameObject); return; }
+        instance = this;
 
-        UpdatePlayerAmmount();
         posTextTMP = PositionText.GetComponent<TextMeshProUGUI>();
-        finishList = new string[playerAmmount];
+        if (finishCountdownText) finishCountdownText.gameObject.SetActive(false);
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    void OnTriggerEnter2D(Collider2D collision)
     {
-        if (!HasStateAuthority)
-            return;
+        if (!HasStateAuthority || RaceEnded) return;
 
-        UpdatePlayerAmmount();
+        var plMov = collision.GetComponent<PlayerMovement>();
+        if (plMov == null || plMov.HasFinished) return;
 
-        PlayerMovement plMov = collision.gameObject.GetComponent<PlayerMovement>();
-
+        plMov.PlayerStopForever();
         plMov.RPC_WinScreen();
-        
-        if (plMov != null)
-        {
-            plMov.PlayerStopForever();
-        }
 
         playersFinished++;
+        finishList.Add(plMov.GetPlayerName());
 
-        finishList[playersFinished - 1] = plMov.GetPlayerName();
+        // El primero en llegar arranca la cuenta regresiva
+        if (playersFinished == 1)
+            FinishCountdown = TickTimer.CreateFromSeconds(Runner, finishCountdownSeconds);
 
-        if (playersFinished >= playerAmmount)
+        if (playersFinished >= NetworkManager.Instance.GetActivePlayersAmount())
+            EndRace();
+    }
+
+    public override void FixedUpdateNetwork()
+    {
+        if (!HasStateAuthority || RaceEnded) return;
+
+        if (FinishCountdown.Expired(Runner))
+            EndRace();
+    }
+
+    // Corre en host y clientes: muestra los segundos que quedan
+    public override void Render()
+    {
+        if (!finishCountdownText) return;
+
+        bool show = FinishCountdown.IsRunning && !RaceEnded;
+        finishCountdownText.gameObject.SetActive(show);
+
+        if (show)
         {
-            RPC_ShowEndResults(finishList);
-            Invoke("GoToLobby", 3f);
+            float left = FinishCountdown.RemainingTime(Runner) ?? 0f;
+            finishCountdownText.text = Mathf.CeilToInt(left).ToString();
         }
     }
 
-    public void ShowPlayerPosition(int position)
+    // Pública para llamarla también desde el TimeManager cuando se acaba el tiempo
+    public void EndRace()
     {
+        if (!HasStateAuthority || RaceEnded) return;
+        RaceEnded = true;
 
-        UpdatePlayerAmmount();
+        int finishedCount = finishList.Count;
+        var results = new List<string>(finishList);
 
-        posTextTMP.text = "You came in " + position;
-
-        switch (position) 
+        // Los que no llegaron: se frenan y quedan al final como descalificados
+        foreach (var p in FindObjectsByType<PlayerMovement>(FindObjectsSortMode.None))
         {
-            case 1:
-                if (playerAmmount == 1) { posTextTMP.text = "You Made it, maybe try getting some friends next"; }
-                posTextTMP.text = "You came in First";
-                break;
-            case 2:
-                posTextTMP.text = "You came in Second";
-                break;
-            case 3:
-                posTextTMP.text = "You came in Third";
-                break;
-            case 4:
-                posTextTMP.text = "You came in Last";
-                break;
-            default:
-                posTextTMP.text = "You came in " + position;
-                break;
+            if (p.HasFinished) continue;
+            p.PlayerStopForever();
+            results.Add(p.GetPlayerName());
         }
+
+        NetworkManager.Instance.SaveLastRaceResults(results, finishedCount);
+        RPC_ShowEndResults(results.ToArray(), finishedCount);
+        Invoke(nameof(GoToLobby), 3f);
     }
 
-    private void UpdatePlayerAmmount() 
+    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
+    void RPC_ShowEndResults(string[] positions, int finishedCount)
     {
-        playerAmmount = NetworkManager.Instance.GetActivePlayersAmount();
-    }
+        NetworkManager.Instance.SetLocalLastRace(NetworkManager.EncodeResults(positions, finishedCount)); // NUEVO
 
-    public void TriggerWinScreen()
-    {
-        VictoryScreen.SetActive(true);
-    }
-
-    [Rpc(RpcSources.StateAuthority, RpcTargets.All)]    
-    public void RPC_ShowEndResults(string[] positions)
-    {
+        VictoryScreen.SetActive(true);   // los descalificados nunca la habían abierto
         wfopText.SetActive(false);
         PositionText.SetActive(true);
 
-        int myPos = 0;
-        for (int i = 0; i < positions.Length; i++)
+        int myPos = System.Array.IndexOf(positions, NetworkManager.Instance.LocalNickname) + 1;
+
+        if (myPos == 0 || myPos > finishedCount)
         {
-            if (positions[i].Equals(NetworkManager.Instance.LocalNickname))
-            {
-                myPos = i + 1;
-            }
+            posTextTMP.text = "Disqualified";
+            return;
         }
-        
-        ShowPlayerPosition(myPos);
+
+        ShowPlayerPosition(myPos, positions.Length);
     }
 
-    private void GoToLobby()
+    void ShowPlayerPosition(int position, int totalPlayers)
     {
-        Runner.LoadScene("Lobby");
+        if (totalPlayers == 1)
+        {
+            posTextTMP.text = "You Made it, maybe try getting some friends next";
+            return;
+        }
+
+        posTextTMP.text = position switch
+        {
+            1 => "You came in First",
+            2 => "You came in Second",
+            3 => "You came in Third",
+            4 => "You came in Last",
+            _ => "You came in " + position
+        };
     }
+
+    public void TriggerWinScreen() => VictoryScreen.SetActive(true);
+
+    void GoToLobby() => Runner.LoadScene("Lobby");
 }
