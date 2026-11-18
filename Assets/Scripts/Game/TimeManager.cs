@@ -1,10 +1,12 @@
 using Fusion;
+using System;
 using System.Collections;
 using TMPro;
 using UnityEngine;
 
 public class TimeManager : NetworkBehaviour
 {
+    public static TimeManager instance;
 
     [Header("Start Countdown")]
     [SerializeField] private TextMeshProUGUI countDownText;
@@ -20,11 +22,16 @@ public class TimeManager : NetworkBehaviour
     [SerializeField] private TextMeshProUGUI timerText;
     private bool countTime = true;
 
-
     public override void Spawned()
     {
+        if (instance == null)
+            instance = this;
+
         if (!HasStateAuthority)
             return;
+
+        if (instance != this)
+            Runner.Despawn(this.Object);
 
         RPC_StartCountDown();
     }
@@ -54,7 +61,10 @@ public class TimeManager : NetworkBehaviour
 
             if (realTime <= 0f)
             {
-                //EndRace
+                timerText.text = "0";
+                levelTimer.Stop();
+                countTime = true;
+                FinishLine.instance.EndRace(2);
             }
         }
     }

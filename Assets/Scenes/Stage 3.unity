@@ -275012,6 +275012,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 980857086}
     - target: {fileID: 8029952527642307879, guid: 4875e4cfcd80be14a818677a1a4518bb, type: 3}
+      propertyPath: EndReason
+      value: 
+      objectReference: {fileID: 681766000}
+    - target: {fileID: 8029952527642307879, guid: 4875e4cfcd80be14a818677a1a4518bb, type: 3}
       propertyPath: PositionText
       value: 
       objectReference: {fileID: 559848741}

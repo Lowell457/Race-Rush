@@ -1028,13 +1028,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4170d157230cc65418c3ed5dafaa9a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeManager
-  countDownText: {fileID: 0}
+  countDownText: {fileID: 727132242}
   countDownTime: 3
   maxSize: 150
   minSize: 100
-  panel: {fileID: 0}
+  panel: {fileID: 57658483}
   maxTime: 150
-  timerText: {fileID: 0}
+  timerText: {fileID: 1723388763}
 --- !u!1 &712971241
 GameObject:
   m_ObjectHideFlags: 0
@@ -4986,6 +4986,10 @@ PrefabInstance:
       propertyPath: wfopText
       value: 
       objectReference: {fileID: 980857086}
+    - target: {fileID: 8029952527642307879, guid: 4875e4cfcd80be14a818677a1a4518bb, type: 3}
+      propertyPath: EndReason
+      value: 
+      objectReference: {fileID: 681766000}
     - target: {fileID: 8029952527642307879, guid: 4875e4cfcd80be14a818677a1a4518bb, type: 3}
       propertyPath: PositionText
       value: 

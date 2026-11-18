@@ -23,6 +23,8 @@ public class FinishLine : NetworkBehaviour
 
     readonly List<string> finishList = new();   // solo lo usa el host
 
+    [SerializeField] private TextMeshProUGUI EndReason;
+
     void Awake()
     {
         if (instance != null && instance != this) { Destroy(gameObject); return; }
@@ -50,7 +52,7 @@ public class FinishLine : NetworkBehaviour
             FinishCountdown = TickTimer.CreateFromSeconds(Runner, finishCountdownSeconds);
 
         if (playersFinished >= NetworkManager.Instance.GetActivePlayersAmount())
-            EndRace();
+            EndRace(0);
     }
 
     public override void FixedUpdateNetwork()
@@ -58,7 +60,7 @@ public class FinishLine : NetworkBehaviour
         if (!HasStateAuthority || RaceEnded) return;
 
         if (FinishCountdown.Expired(Runner))
-            EndRace();
+            EndRace(1);
     }
 
     // Corre en host y clientes: muestra los segundos que quedan
@@ -77,7 +79,7 @@ public class FinishLine : NetworkBehaviour
     }
 
     // Pública para llamarla también desde el TimeManager cuando se acaba el tiempo
-    public void EndRace()
+    public void EndRace(int motive)
     {
         if (!HasStateAuthority || RaceEnded) return;
         RaceEnded = true;
@@ -94,12 +96,12 @@ public class FinishLine : NetworkBehaviour
         }
 
         NetworkManager.Instance.SaveLastRaceResults(results, finishedCount);
-        RPC_ShowEndResults(results.ToArray(), finishedCount);
+        RPC_ShowEndResults(results.ToArray(), finishedCount, motive);
         Invoke(nameof(GoToLobby), 3f);
     }
 
     [Rpc(RpcSources.StateAuthority, RpcTargets.All)]
-    void RPC_ShowEndResults(string[] positions, int finishedCount)
+    void RPC_ShowEndResults(string[] positions, int finishedCount, int motive)
     {
         NetworkManager.Instance.SetLocalLastRace(NetworkManager.EncodeResults(positions, finishedCount)); // NUEVO
 
@@ -108,6 +110,19 @@ public class FinishLine : NetworkBehaviour
         PositionText.SetActive(true);
 
         int myPos = System.Array.IndexOf(positions, NetworkManager.Instance.LocalNickname) + 1;
+
+        switch (motive)
+        {
+            case 0:
+                EndReason.text = "You made it";
+                break;
+            case 1:
+                EndReason.text = "Time's up";
+                break;
+            case 2:
+                EndReason.text = "Time's up";
+                break;
+        }
 
         if (myPos == 0 || myPos > finishedCount)
         {

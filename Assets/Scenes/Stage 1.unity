@@ -265485,7 +265485,7 @@ MonoBehaviour:
   maxSize: 150
   minSize: 100
   panel: {fileID: 160018691}
-  maxTime: 150
+  maxTime: 60
   timerText: {fileID: 35739724}
 --- !u!114 &702800159
 MonoBehaviour:
@@ -271800,6 +271800,10 @@ PrefabInstance:
       propertyPath: wfopText
       value: 
       objectReference: {fileID: 980857086}
+    - target: {fileID: 8029952527642307879, guid: 4875e4cfcd80be14a818677a1a4518bb, type: 3}
+      propertyPath: EndReason
+      value: 
+      objectReference: {fileID: 681766000}
     - target: {fileID: 8029952527642307879, guid: 4875e4cfcd80be14a818677a1a4518bb, type: 3}
       propertyPath: PositionText
       value: 
