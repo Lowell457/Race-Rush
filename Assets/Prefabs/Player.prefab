@@ -340,6 +340,7 @@ GameObject:
   - component: {fileID: 5367797384734251245}
   - component: {fileID: 8388595733857383586}
   - component: {fileID: -6775655039196755898}
+  - component: {fileID: 862698085224252135}
   m_Layer: 6
   m_Name: Player
   m_TagString: Untagged
@@ -494,6 +495,7 @@ MonoBehaviour:
   NetworkedBehaviours:
   - {fileID: 4207928049045642587}
   - {fileID: -6775655039196755898}
+  - {fileID: 862698085224252135}
   ForceRemoteRenderTimeframe: 0
 --- !u!114 &-6775655039196755898
 MonoBehaviour:
@@ -518,3 +520,16 @@ MonoBehaviour:
     Position: 0.01
     Rotation: 0.01
     Scale: 0.01
+--- !u!114 &862698085224252135
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6466058805136151603}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 571e9032566a5544994dbda4448a65e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRaceState
+  _FinishTick: 0

@@ -41,8 +41,10 @@ public class FinishLine : NetworkBehaviour
         var plMov = collision.GetComponent<PlayerMovement>();
         if (plMov == null || plMov.HasFinished) return;
 
+        plMov.GetComponentInParent<PlayerRaceState>()?.MarkFinished();   // ← NUEVO: registra el tick de llegada
+
         plMov.PlayerStopForever();
-        plMov.RPC_WinScreen();
+        plMov.RPC_WinScreen(); ;
 
         playersFinished++;
         finishList.Add(plMov.GetPlayerName());
