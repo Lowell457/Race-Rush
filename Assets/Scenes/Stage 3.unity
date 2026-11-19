@@ -489,6 +489,72 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 160018691}
   m_CullTransparentMesh: 1
+--- !u!1 &194905522
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 194905525}
+  - component: {fileID: 194905524}
+  - component: {fileID: 194905523}
+  m_Layer: 0
+  m_Name: RaceManager
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &194905523
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 194905522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 52f170fb42ef4b1429d8f3a771007737, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::RaceManager
+  mapIndex: 2
+  _StartTick: 0
+--- !u!114 &194905524
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 194905522}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Fusion.Runtime.dll::Fusion.NetworkObject
+  SortKey: 2766901861
+  ObjectInterest: 1
+  Flags: 262145
+  NestedObjects: []
+  NetworkedBehaviours:
+  - {fileID: 194905523}
+  ForceRemoteRenderTimeframe: 0
+--- !u!4 &194905525
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 194905522}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 686.509, y: 343.0673, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &198542585
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -268388,13 +268454,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4170d157230cc65418c3ed5dafaa9a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeManager
+  mapIndex: 0
   countDownText: {fileID: 1701547465}
   countDownTime: 3
   maxSize: 150
   minSize: 100
   panel: {fileID: 160018691}
+  goDisplayTime: 1
   maxTime: 150
   timerText: {fileID: 35739724}
+  _StartTick: 0
+  _RaceOver:
+    _value: 0
 --- !u!114 &702800159
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -275316,3 +275387,4 @@ SceneRoots:
   - {fileID: 1713755564}
   - {fileID: 1035938443}
   - {fileID: 1130678112}
+  - {fileID: 194905525}

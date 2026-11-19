@@ -264912,7 +264912,7 @@ GameObject:
   - component: {fileID: 443998209}
   - component: {fileID: 443998208}
   m_Layer: 0
-  m_Name: g
+  m_Name: RaceManager
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
