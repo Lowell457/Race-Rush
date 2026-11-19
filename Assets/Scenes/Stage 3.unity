@@ -268595,7 +268595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4170d157230cc65418c3ed5dafaa9a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeManager
-  mapIndex: 0
+  mapIndex: 2
   countDownText: {fileID: 1701547465}
   countDownTime: 3
   maxSize: 150

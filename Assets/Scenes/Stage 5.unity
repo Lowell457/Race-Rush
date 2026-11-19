@@ -343,6 +343,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: CheckPoint (2)
       objectReference: {fileID: 0}
+    - target: {fileID: 8622976167325322536, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
+      propertyPath: m_Size.x
+      value: 6.225662
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622976167325322536, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
+      propertyPath: m_Size.y
+      value: 2.9817944
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622976167325322536, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
+      propertyPath: m_Offset.x
+      value: 0.5373908
+      objectReference: {fileID: 0}
+    - target: {fileID: 8622976167325322536, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.5467253
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
@@ -736,7 +752,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4932407032734728311, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
       propertyPath: priority
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5362047123587883539, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1282,7 +1298,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4170d157230cc65418c3ed5dafaa9a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeManager
-  mapIndex: 0
+  mapIndex: 4
   countDownText: {fileID: 727132242}
   countDownTime: 3
   maxSize: 150
@@ -18523,7 +18539,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4932407032734728311, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
       propertyPath: priority
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5362047123587883539, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
       propertyPath: m_LocalPosition.x

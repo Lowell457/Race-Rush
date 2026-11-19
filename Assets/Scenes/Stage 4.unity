@@ -1353,7 +1353,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4170d157230cc65418c3ed5dafaa9a90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeManager
-  mapIndex: 0
+  mapIndex: 3
   countDownText: {fileID: 727132242}
   countDownTime: 3
   maxSize: 150
@@ -9837,7 +9837,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 4932407032734728311, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
       propertyPath: priority
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5362047123587883539, guid: 3395267957f041e4e90ec5c905d0e3d0, type: 3}
       propertyPath: m_LocalPosition.x
