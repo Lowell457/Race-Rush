@@ -87,6 +87,11 @@ public class PlayerMovement : NetworkBehaviour
         //-----Set-Live-Ops---------
 
         dashCooldown = LiveOpsManager.instance.DashCooldown;
+        dashDuration = LiveOpsManager.instance.DashDuration;
+        dashSpeed = LiveOpsManager.instance.DashSpeed;
+        stunOtherFor = LiveOpsManager.instance.StunDuration;
+        pushForce = LiveOpsManager.instance.PushForce;
+        radius = LiveOpsManager.instance.PushRadius;
 
         //---------------
 

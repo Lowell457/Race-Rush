@@ -15,11 +15,23 @@ public class LiveOpsManager : MonoBehaviour
     private bool turboWeek;
     private bool extremeDash;
 
+    private float dashDuration;
+    private float dashSpeed;
+    private float pushForce;
+    private float pushRadius;
+    private float stunDuration;
+
     public float BoostDuration => boostDuration;
     public float BoostMult => boostMult;
     public float DashCooldown => dashCooldown;
     public bool TurboWeek => turboWeek;
     public bool ExtremeDash => extremeDash;
+
+    public float DashDuration => dashDuration;
+    public float DashSpeed => dashSpeed;
+    public float PushForce => pushForce;
+    public float PushRadius => pushRadius;
+    public float StunDuration => stunDuration;
 
     private void Awake()
     {
@@ -58,6 +70,12 @@ public class LiveOpsManager : MonoBehaviour
             dashCooldown = config.GetFloat("dashCooldown", 1f);
             extremeDash = config.GetBool("extremeDash", false);
             turboWeek = config.GetBool("turboWeek", false);
+
+            dashDuration = config.GetFloat("dashDuration", 1f);
+            dashSpeed = config.GetFloat("dashSpeed", 1f);
+            pushForce = config.GetFloat("pushForce", 1f);
+            pushRadius = config.GetFloat("pushRadius", 1f);
+            stunDuration = config.GetFloat("stunDuration", 1f);
         }
         catch (Exception e)
         {
