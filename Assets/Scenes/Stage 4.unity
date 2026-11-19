@@ -669,6 +669,10 @@ PrefabInstance:
       propertyPath: offset.x
       value: -12
       objectReference: {fileID: 0}
+    - target: {fileID: 1538357108660435622, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
+      propertyPath: travelTime
+      value: 1.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1913433748119106491, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
       propertyPath: SortKey
       value: 1465093029
@@ -2389,6 +2393,10 @@ PrefabInstance:
     - target: {fileID: 1538357108660435622, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
       propertyPath: offset.x
       value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 1538357108660435622, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
+      propertyPath: travelTime
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1913433748119106491, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
       propertyPath: SortKey
@@ -9337,6 +9345,10 @@ PrefabInstance:
       propertyPath: offset.x
       value: -9
       objectReference: {fileID: 0}
+    - target: {fileID: 1538357108660435622, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
+      propertyPath: travelTime
+      value: 1.51
+      objectReference: {fileID: 0}
     - target: {fileID: 1913433748119106491, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
       propertyPath: SortKey
       value: 1607556350
@@ -9476,6 +9488,10 @@ PrefabInstance:
     - target: {fileID: 1538357108660435622, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
       propertyPath: offset.x
       value: 12
+      objectReference: {fileID: 0}
+    - target: {fileID: 1538357108660435622, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
+      propertyPath: travelTime
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1913433748119106491, guid: bb639ac77a02424469e5e599f7ee856f, type: 3}
       propertyPath: SortKey
