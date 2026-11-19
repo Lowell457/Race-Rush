@@ -780,11 +780,11 @@ PlayerSettings:
   captureStartupLogs: {}
   activeInputHandler: 1
   windowsGamepadBackendHint: 0
-  cloudProjectId: 21505d58-2fb1-4842-9ff5-a718e54629e5
+  cloudProjectId: 2a88b83e-e5cd-4c4b-9d76-006940a78da6
   framebufferDepthMemorylessMode: 0
   qualitySettingsNames: []
-  projectName: Race Rush 2026-10-06_20-26-10
-  organizationId: lowell457
+  projectName: Race Rush
+  organizationId: kurtup
   cloudEnabled: 0
   legacyClampBlendShapeWeights: 0
   hmiLoadingImage: {fileID: 0}

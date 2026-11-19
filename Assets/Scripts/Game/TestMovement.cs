@@ -84,6 +84,12 @@ public class PlayerMovement : NetworkBehaviour
 
         NetworkManager.Instance.StartRace += StartTheRace;
 
+        //-----Set-Live-Ops---------
+
+        dashCooldown = LiveOpsManager.instance.DashCooldown;
+
+        //---------------
+
         if (HasInputAuthority)
         {
             RPC_SetDisplayName(NetworkManager.Instance.LocalNickname);
